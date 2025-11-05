@@ -13,11 +13,14 @@ export async function signup(state: SignupFormStateType, formData: FormData) {
   // If any form fields are invalid, return early
   if (!validatedFields.success) {
     return {
+      form: Object.fromEntries(formData.entries()),
       errors: validatedFields.error.flatten().fieldErrors,
     };
   }
 
   // Call the provider or db to create a user...
 
-  return undefined;
+  return {
+    form: Object.fromEntries(formData.entries()),
+  };
 }

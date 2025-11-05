@@ -4,13 +4,18 @@ import { signup } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
+import { useForm } from "react-hook-form";
 
-import { useActionState } from "react";
+import { useActionState, useTransition } from "react";
 import z from "zod";
 import { SignupFormSchema } from "./validations";
+import { useFormStatus } from "react-dom";
 
 export type SignupFormStateType =
-  | { errors: Record<keyof z.infer<typeof SignupFormSchema>, string[]> }
+  | {
+      errors: Record<keyof z.infer<typeof SignupFormSchema>, string[]>;
+      form: z.infer<typeof SignupFormSchema>;
+    }
   | undefined;
 
 export default function SignupForm() {
@@ -19,7 +24,7 @@ export default function SignupForm() {
   >(signup, undefined);
 
   return (
-    <form className="flex flex-col gap-1" action={action}>
+    <form className="flex flex-col gap-1" method="POST">
       <div>
         <Label htmlFor="name">Name</Label>
         <Input
@@ -29,6 +34,7 @@ export default function SignupForm() {
           placeholder="John Doe"
           disabled={isPending}
           required
+          defaultValue={state?.form.name}
         />
         {state?.errors?.name && (
           <p className="text-destructive text-xs">{state.errors.name}</p>
@@ -43,6 +49,7 @@ export default function SignupForm() {
           placeholder="Email"
           disabled={isPending}
           required
+          defaultValue={state?.form.email}
         />
         {state?.errors?.email && (
           <p className="text-destructive text-xs">{state.errors.email}</p>
@@ -57,6 +64,7 @@ export default function SignupForm() {
           type="password"
           disabled={isPending}
           required
+          defaultValue={state?.form.password}
         />
         {state?.errors?.password && (
           <div className="text-destructive text-xs">
@@ -69,7 +77,12 @@ export default function SignupForm() {
           </div>
         )}
       </div>
-      <Button className="mt-4" disabled={isPending} type="submit">
+      <Button
+        type="submit"
+        formAction={action}
+        className="mt-4"
+        disabled={isPending}
+      >
         {isPending ? "Signing up..." : "Sign Up"}
       </Button>
     </form>
