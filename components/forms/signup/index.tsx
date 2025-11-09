@@ -4,27 +4,25 @@ import { signup } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
-import { useForm } from "react-hook-form";
 
-import { useActionState, useTransition } from "react";
+import { useActionState } from "react";
 import z from "zod";
 import { SignupFormSchema } from "./validations";
-import { useFormStatus } from "react-dom";
 
 export type SignupFormStateType =
   | {
-      errors: Record<keyof z.infer<typeof SignupFormSchema>, string[]>;
+      errors?: Partial<
+        Record<keyof z.infer<typeof SignupFormSchema>, string[]>
+      >;
       form: z.infer<typeof SignupFormSchema>;
     }
   | undefined;
 
 export default function SignupForm() {
-  const [state, action, isPending] = useActionState<
-    SignupFormStateType | undefined
-  >(signup, undefined);
+  const [state, action, isPending] = useActionState(signup, undefined);
 
   return (
-    <form className="flex flex-col gap-1" method="POST">
+    <form className="flex flex-col gap-1" action={action}>
       <div>
         <Label htmlFor="name">Name</Label>
         <Input
