@@ -10,8 +10,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// NextAuth.js Models
-// Following https://authjs.dev/getting-started/adapters/prisma
+enum AuthProvider {
+  NORMAL
+  GOOGLE
+}
 
 model User {
   id            String    @id @default(cuid())
@@ -19,35 +21,35 @@ model User {
   email         String    @unique
   emailVerified DateTime?
   image         String?
-  password      String? // For credentials-based auth (nullable for OAuth users)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   deletedAt     DateTime?
 
-  accounts Account[]
+  auths    Auth[]
   sessions Session[]
 }
 
-model Account {
-  id                String    @id @default(cuid())
+model Auth {
+  id                String       @id @default(cuid())
   userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?   @db.Text
-  access_token      String?   @db.Text
+  provider          AuthProvider
+  password          String? // For NORMAL provider only
+  providerAccountId String? // For OAuth providers (Google ID, etc.)
+  refresh_token     String?      @db.Text
+  access_token      String?      @db.Text
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String?   @db.Text
+  id_token          String?      @db.Text
   session_state     String?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
   deletedAt         DateTime?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([provider, providerAccountId])
+  @@unique([provider, userId])
+  @@index([userId])
 }
 
 model Session {

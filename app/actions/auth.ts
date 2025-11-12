@@ -52,13 +52,24 @@ export async function signup(
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create the user
-    await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-      },
+    // Create user and auth record in a transaction
+    await prisma.$transaction(async (tx) => {
+      // Create the user
+      const user = await tx.user.create({
+        data: {
+          name,
+          email,
+        },
+      });
+
+      // Create auth record with NORMAL provider
+      await tx.auth.create({
+        data: {
+          userId: user.id,
+          provider: "NORMAL",
+          password: hashedPassword,
+        },
+      });
     });
 
     console.log("User created successfully:", email);
@@ -67,7 +78,9 @@ export async function signup(
     return {
       form: { name, email, password },
       errors: {
-        email: ["An error occurred while creating your account. Please try again."],
+        email: [
+          "An error occurred while creating your account. Please try again.",
+        ],
       },
     };
   }
