@@ -1,6 +1,6 @@
 # POS Backend System
 
-A Point of Sale (POS) backend system built with modern web technologies including Next.js 14 App Router, Prisma ORM, NextAuth.js for authentication, and ShadCN UI components.
+A Point of Sale (POS) backend system built with modern web technologies including Next.js 14 App Router, Prisma ORM, custom session-based authentication, and ShadCN UI components.
 
 ## Features
 
@@ -8,7 +8,7 @@ A Point of Sale (POS) backend system built with modern web technologies includin
   - User registration (signup) with validation
   - Secure login with credentials
   - Password hashing using bcryptjs
-  - Session management with NextAuth.js
+  - Session management with HTTP-only cookies
   - Protected routes and server-side authentication
 
 - ✅ **Database Management**
@@ -36,7 +36,7 @@ A Point of Sale (POS) backend system built with modern web technologies includin
 ## Tech Stack
 
 - **Framework**: Next.js 14 with App Router
-- **Authentication**: NextAuth.js v4
+- **Authentication**: Custom session tokens stored in Prisma
 - **Database**: Prisma ORM with SQLite
 - **Styling**: Tailwind CSS
 - **UI Components**: ShadCN UI
@@ -60,25 +60,23 @@ cd pos-next
 
 2. Install dependencies:
 ```bash
-npm install
+pnpm install
 ```
 
 3. Set up environment variables:
 Create a `.env` file in the root directory:
 ```env
 DATABASE_URL="file:./dev.db"
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="your-secret-key-change-this-in-production"
 ```
 
 4. Initialize the database:
 ```bash
-npx prisma migrate dev --name init
+pnpm prisma migrate dev --name init
 ```
 
 5. Run the development server:
 ```bash
-npm run dev
+pnpm dev
 ```
 
 6. Open [http://localhost:3000](http://localhost:3000) in your browser.
@@ -88,9 +86,9 @@ npm run dev
 ```
 pos-next/
 ├── app/
-│   ├── api/
-│   │   ├── auth/[...nextauth]/  # NextAuth API routes
-│   │   └── signup/              # Signup API endpoint
+│   ├── actions/
+│   │   └── auth.ts              # Signup/login/logout server actions
+│   ├── api/                     # Route handlers (optional/sample)
 │   ├── dashboard/               # Protected dashboard page
 │   ├── login/                   # Login page
 │   ├── signup/                  # Signup page
@@ -98,16 +96,17 @@ pos-next/
 │   ├── page.tsx                 # Home page
 │   └── globals.css              # Global styles
 ├── components/
+│   ├── forms/                   # Auth forms and validation
 │   └── ui/                      # ShadCN UI components
 ├── lib/
-│   ├── auth.ts                  # NextAuth configuration
 │   ├── prisma.ts                # Prisma client
+│   ├── session.ts               # Session helpers
 │   └── utils.ts                 # Utility functions
 ├── prisma/
 │   ├── schema.prisma            # Database schema
 │   └── migrations/              # Database migrations
-└── types/
-    └── next-auth.d.ts           # NextAuth type definitions
+└── prisma/
+  └── migrations/              # Database migrations
 ```
 
 ## Available Scripts
@@ -117,30 +116,69 @@ pos-next/
 - `npm start` - Start production server
 - `npm run lint` - Run ESLint
 
-## API Routes
+## Authentication Flow
 
-### Authentication
+Authentication is handled through server actions located in `app/actions/auth.ts`:
 
-- `POST /api/auth/signin` - Login with credentials
-- `POST /api/auth/signout` - Sign out
-- `GET /api/auth/session` - Get current session
-
-### User Management
-
-- `POST /api/signup` - Create new user account
+- `signup` - Validates form data, creates the user, stores hashed credentials, and starts a session.
+- `login` - Verifies an existing user and issues a new session token.
+- `logout` - Revokes the active session and clears the cookie.
 
 ## Database Schema
 
-### User Model
+### Auth-Related Models
 
 ```prisma
+enum AuthProvider {
+  NORMAL
+  GOOGLE
+}
+
 model User {
   id        String   @id @default(cuid())
-  email     String   @unique
   name      String?
-  password  String
+  email     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  auths    Auth[]
+  sessions Session[]
+}
+
+model Auth {
+  id                String       @id @default(cuid())
+  userId            String
+  provider          AuthProvider
+  password          String?
+  providerAccountId String?
+  refresh_token     String?      @db.Text
+  access_token      String?      @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?      @db.Text
+  session_state     String?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  deletedAt         DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, userId])
+  @@index([userId])
+}
+
+model Session {
+  id           String    @id @default(cuid())
+  sessionToken String    @unique
+  userId       String
+  expires      DateTime
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 ```
 
@@ -148,8 +186,8 @@ model User {
 
 - Passwords are hashed using bcryptjs with a salt round of 10
 - Environment variables are used for sensitive configuration
-- CSRF protection enabled through NextAuth
-- Session-based authentication with JWT tokens
+- Session tokens are stored server-side in Prisma and issued via HTTP-only cookies
+- Redirect-based guard on protected pages to prevent unauthenticated access
 
 ## Switching to PostgreSQL/MySQL
 

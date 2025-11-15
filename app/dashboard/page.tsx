@@ -1,13 +1,13 @@
 import { redirect } from "next/navigation"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
+import { logout } from "@/app/actions/auth"
+import { getCurrentUser } from "@/lib/session"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default async function DashboardPage() {
-  const session = await getServerSession(authOptions)
+  const user = await getCurrentUser()
 
-  if (!session) {
+  if (!user) {
     redirect("/login")
   }
 
@@ -17,9 +17,9 @@ export default async function DashboardPage() {
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">Dashboard</h1>
-            <p className="text-muted-foreground">Welcome back, {session.user?.name || session.user?.email}!</p>
+            <p className="text-muted-foreground">Welcome back, {user.name || user.email}!</p>
           </div>
-          <form action="/api/auth/signout" method="POST">
+          <form action={logout}>
             <Button type="submit" variant="outline">
               Sign Out
             </Button>
@@ -34,7 +34,7 @@ export default async function DashboardPage() {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                This is a basic POS backend system built with Next.js, Prisma, NextAuth, and ShadCN UI.
+                This is a basic POS backend system built with Next.js, Prisma, secure sessions, and ShadCN UI.
               </p>
             </CardContent>
           </Card>
@@ -46,8 +46,8 @@ export default async function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2 text-sm">
-                <p><strong>Name:</strong> {session.user?.name || "N/A"}</p>
-                <p><strong>Email:</strong> {session.user?.email}</p>
+                <p><strong>Name:</strong> {user.name || "N/A"}</p>
+                <p><strong>Email:</strong> {user.email}</p>
               </div>
             </CardContent>
           </Card>

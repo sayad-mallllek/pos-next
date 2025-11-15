@@ -1,8 +1,11 @@
 "use server";
 
-import { SignupFormStateType } from "@/components/forms/signup";
+import type { SignupFormStateType } from "@/components/forms/signup";
 import { SignupFormSchema } from "@/components/forms/signup/validations";
+import type { LoginFormStateType } from "@/components/forms/login";
+import { LoginFormSchema } from "@/components/forms/login/validations";
 import { prisma } from "@/lib/prisma";
+import { createSession, deleteSession } from "@/lib/session";
 import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 import z from "zod";
@@ -53,9 +56,9 @@ export async function signup(
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user and auth record in a transaction
-    await prisma.$transaction(async (tx) => {
+    const user = await prisma.$transaction(async (tx) => {
       // Create the user
-      const user = await tx.user.create({
+      const newUser = await tx.user.create({
         data: {
           name,
           email,
@@ -65,14 +68,16 @@ export async function signup(
       // Create auth record with NORMAL provider
       await tx.auth.create({
         data: {
-          userId: user.id,
+          userId: newUser.id,
           provider: "NORMAL",
           password: hashedPassword,
         },
       });
+
+      return newUser;
     });
 
-    console.log("User created successfully:", email);
+    await createSession(user.id);
   } catch (error) {
     console.error("Signup error:", error);
     return {
@@ -85,6 +90,82 @@ export async function signup(
     };
   }
 
-  // Redirect to login page after successful signup
+  redirect("/dashboard");
+}
+
+export async function login(
+  state: LoginFormStateType,
+  formData: FormData
+): Promise<LoginFormStateType> {
+  const validatedFields = LoginFormSchema.safeParse({
+    email: formData.get("email"),
+    password: formData.get("password"),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      form: {
+        email: formData.get("email") as string,
+        password: formData.get("password") as string,
+      },
+      errors: validatedFields.error.flatten().fieldErrors as Partial<
+        Record<keyof z.infer<typeof LoginFormSchema>, string[]>
+      >,
+    };
+  }
+
+  const { email, password } = validatedFields.data;
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: {
+        auths: {
+          where: { provider: "NORMAL" },
+        },
+      },
+    });
+
+    const authRecord = user?.auths[0];
+
+    if (!user || !authRecord?.password) {
+      return {
+        form: { email, password },
+        errors: {
+          email: ["Invalid email or password"],
+        },
+      };
+    }
+
+    const isPasswordValid = await bcrypt.compare(
+      password,
+      authRecord.password
+    );
+
+    if (!isPasswordValid) {
+      return {
+        form: { email, password },
+        errors: {
+          email: ["Invalid email or password"],
+        },
+      };
+    }
+
+    await createSession(user.id);
+  } catch (error) {
+    console.error("Login error:", error);
+    return {
+      form: { email, password },
+      errors: {
+        email: ["Unable to sign in right now. Please try again later."],
+      },
+    };
+  }
+
+  redirect("/dashboard");
+}
+
+export async function logout() {
+  await deleteSession();
   redirect("/login");
 }

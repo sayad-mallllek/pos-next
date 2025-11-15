@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
-import { z } from "zod"
+import { ZodError, z } from "zod"
 import { prisma } from "@/lib/prisma"
 
 const signupSchema = z.object({
@@ -32,12 +32,17 @@ export async function POST(req: Request) {
     // Hash password
     const hashedPassword = await bcrypt.hash(validatedData.password, 10)
 
-    // Create user
+    // Create user and associated auth record
     const user = await prisma.user.create({
       data: {
         email: validatedData.email,
-        password: hashedPassword,
         name: validatedData.name,
+        auths: {
+          create: {
+            provider: "NORMAL",
+            password: hashedPassword,
+          }
+        }
       }
     })
 
@@ -50,9 +55,9 @@ export async function POST(req: Request) {
     }, { status: 201 })
 
   } catch (error) {
-    if (error instanceof z.ZodError) {
+    if (error instanceof ZodError) {
       return NextResponse.json(
-        { error: "Validation failed", details: error.errors },
+        { error: "Validation failed", details: error.issues },
         { status: 400 }
       )
     }

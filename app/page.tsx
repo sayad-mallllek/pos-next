@@ -1,8 +1,14 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import Link from "next/link";
 
-export default function HomePage() {
+export default async function HomePage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-100 px-4">
       <div className="w-full max-w-4xl space-y-8">
@@ -11,7 +17,7 @@ export default function HomePage() {
             POS Backend System
           </h1>
           <p className="mt-4 text-lg text-muted-foreground">
-            Built with Next.js App Router, Prisma, NextAuth, and ShadCN UI
+            Built with Next.js App Router, Prisma, custom sessions, and ShadCN UI
           </p>
         </div>
 
@@ -32,7 +38,7 @@ export default function HomePage() {
             </CardHeader>
             <CardContent>
               <ul className="list-inside list-disc space-y-2 text-sm text-muted-foreground">
-                <li>NextAuth integration with credentials provider</li>
+                <li>Custom credential authentication</li>
                 <li>Password hashing with bcryptjs</li>
                 <li>Form validation using Zod</li>
                 <li>Session management</li>
@@ -87,5 +93,5 @@ export default function HomePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
