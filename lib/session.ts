@@ -6,13 +6,17 @@ const SESSION_COOKIE_NAME = "pos_session";
 const SESSION_TTL_SECONDS = 60 * 60 * 24 * 7; // 7 days
 
 type MutableCookies = Awaited<ReturnType<typeof cookies>> & {
-  set: (name: string, value: string, options?: {
-    expires?: Date;
-    httpOnly?: boolean;
-    sameSite?: "lax" | "strict" | "none";
-    secure?: boolean;
-    path?: string;
-  }) => void;
+  set: (
+    name: string,
+    value: string,
+    options?: {
+      expires?: Date;
+      httpOnly?: boolean;
+      sameSite?: "lax" | "strict" | "none";
+      secure?: boolean;
+      path?: string;
+    }
+  ) => void;
   delete: (name: string, options?: { path?: string }) => void;
 };
 

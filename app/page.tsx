@@ -17,7 +17,8 @@ export default async function HomePage() {
             POS Backend System
           </h1>
           <p className="mt-4 text-lg text-muted-foreground">
-            Built with Next.js App Router, Prisma, custom sessions, and ShadCN UI
+            Built with Next.js App Router, Prisma, custom sessions, and ShadCN
+            UI
           </p>
         </div>
 

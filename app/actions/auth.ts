@@ -137,10 +137,7 @@ export async function login(
       };
     }
 
-    const isPasswordValid = await bcrypt.compare(
-      password,
-      authRecord.password
-    );
+    const isPasswordValid = await bcrypt.compare(password, authRecord.password);
 
     if (!isPasswordValid) {
       return {

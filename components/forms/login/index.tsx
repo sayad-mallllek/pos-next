@@ -10,9 +10,7 @@ import { LoginFormSchema } from "./validations";
 
 export type LoginFormStateType =
   | {
-      errors?: Partial<
-        Record<keyof z.infer<typeof LoginFormSchema>, string[]>
-      >;
+      errors?: Partial<Record<keyof z.infer<typeof LoginFormSchema>, string[]>>;
       form: z.infer<typeof LoginFormSchema>;
     }
   | undefined;

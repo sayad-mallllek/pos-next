@@ -5,6 +5,7 @@ A Point of Sale (POS) backend system built with modern web technologies includin
 ## Features
 
 - ✅ **Authentication System**
+
   - User registration (signup) with validation
   - Secure login with credentials
   - Password hashing using bcryptjs
@@ -12,17 +13,20 @@ A Point of Sale (POS) backend system built with modern web technologies includin
   - Protected routes and server-side authentication
 
 - ✅ **Database Management**
+
   - Prisma ORM with SQLite (easily switchable to PostgreSQL/MySQL)
   - Type-safe database queries
   - Automatic migrations
   - User model with authentication fields
 
 - ✅ **Form Validation**
+
   - Runtime validation with Zod
   - Client-side and server-side validation
   - User-friendly error messages
 
 - ✅ **Modern UI**
+
   - ShadCN UI components with Tailwind CSS
   - Responsive design
   - Clean and accessible interface
@@ -53,28 +57,33 @@ A Point of Sale (POS) backend system built with modern web technologies includin
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/sayad-mallllek/pos-next.git
 cd pos-next
 ```
 
 2. Install dependencies:
+
 ```bash
 pnpm install
 ```
 
 3. Set up environment variables:
-Create a `.env` file in the root directory:
+   Create a `.env` file in the root directory:
+
 ```env
 DATABASE_URL="file:./dev.db"
 ```
 
 4. Initialize the database:
+
 ```bash
 pnpm prisma migrate dev --name init
 ```
 
 5. Run the development server:
+
 ```bash
 pnpm dev
 ```
@@ -194,6 +203,7 @@ model Session {
 To use PostgreSQL or MySQL instead of SQLite:
 
 1. Update `prisma/schema.prisma`:
+
 ```prisma
 datasource db {
   provider = "postgresql" // or "mysql"
@@ -202,11 +212,13 @@ datasource db {
 ```
 
 2. Update `.env` with your database URL:
+
 ```env
 DATABASE_URL="postgresql://user:password@localhost:5432/posdb"
 ```
 
 3. Run migrations:
+
 ```bash
 npx prisma migrate dev
 ```
