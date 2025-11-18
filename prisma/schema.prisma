@@ -10,67 +10,62 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum AuthProvider {
-  NORMAL
-  GOOGLE
-}
-
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
   image         String?
   createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  deletedAt     DateTime?
+  updatedAt     DateTime  @default(now()) @updatedAt
+  sessions      Session[]
+  accounts      Account[]
 
-  auths    Auth[]
-  sessions Session[]
-}
-
-model Auth {
-  id                String       @id @default(cuid())
-  userId            String
-  provider          AuthProvider
-  password          String? // For NORMAL provider only
-  providerAccountId String? // For OAuth providers (Google ID, etc.)
-  refresh_token     String?      @db.Text
-  access_token      String?      @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?      @db.Text
-  session_state     String?
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
-  deletedAt         DateTime?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, userId])
-  @@index([userId])
+  @@unique([email])
+  @@map("user")
 }
 
 model Session {
-  id           String    @id @default(cuid())
-  sessionToken String    @unique
-  userId       String
-  expires      DateTime
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  deletedAt    DateTime?
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([token])
+  @@map("session")
 }
 
-model VerificationToken {
-  identifier String
-  token      String    @unique
-  expires    DateTime
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  deletedAt  DateTime?
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
-  @@unique([identifier, token])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  @@map("verification")
 }

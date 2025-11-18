@@ -1,19 +1,21 @@
 "use client";
 
-import { signup } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 
+import { signup } from "@/app/actions/auth/signup";
 import { useActionState } from "react";
 import z from "zod";
 import { SignupFormSchema } from "./validations";
 
+type SignupErrors = Partial<
+  Record<keyof z.infer<typeof SignupFormSchema> | "general", string[]>
+>;
+
 export type SignupFormStateType =
   | {
-      errors?: Partial<
-        Record<keyof z.infer<typeof SignupFormSchema>, string[]>
-      >;
+      errors?: SignupErrors;
       form: z.infer<typeof SignupFormSchema>;
     }
   | undefined;
@@ -23,6 +25,11 @@ export default function SignupForm() {
 
   return (
     <form className="flex flex-col gap-1" action={action}>
+      {state?.errors?.general && (
+        <p className="text-destructive text-sm">
+          {state.errors.general.join(" ")}
+        </p>
+      )}
       <div>
         <Label htmlFor="name">Name</Label>
         <Input
@@ -35,7 +42,9 @@ export default function SignupForm() {
           defaultValue={state?.form.name}
         />
         {state?.errors?.name && (
-          <p className="text-destructive text-xs">{state.errors.name}</p>
+          <p className="text-destructive text-xs">
+            {state.errors.name.join(" ")}
+          </p>
         )}
       </div>
 
@@ -50,7 +59,9 @@ export default function SignupForm() {
           defaultValue={state?.form.email}
         />
         {state?.errors?.email && (
-          <p className="text-destructive text-xs">{state.errors.email}</p>
+          <p className="text-destructive text-xs">
+            {state.errors.email.join(" ")}
+          </p>
         )}
       </div>
 

@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { logout } from "@/app/actions/auth";
+
 import { getCurrentUser } from "@/lib/session";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +16,13 @@ export default async function DashboardPage() {
   if (!user) {
     redirect("/login");
   }
+
+  const logout = async () => {
+    "use server";
+    // Invalidate the user's session here
+    // This is a placeholder; implement your session invalidation logic
+    redirect("/login");
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">

@@ -1,6 +1,6 @@
 "use client";
 
-import { login } from "@/app/actions/auth";
+import { login } from "@/app/actions/auth/login";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
@@ -8,9 +8,13 @@ import { useActionState } from "react";
 import z from "zod";
 import { LoginFormSchema } from "./validations";
 
+type LoginErrors = Partial<
+  Record<keyof z.infer<typeof LoginFormSchema> | "general", string[]>
+>;
+
 export type LoginFormStateType =
   | {
-      errors?: Partial<Record<keyof z.infer<typeof LoginFormSchema>, string[]>>;
+      errors?: LoginErrors;
       form: z.infer<typeof LoginFormSchema>;
     }
   | undefined;
@@ -20,6 +24,11 @@ export default function LoginForm() {
 
   return (
     <form className="flex flex-col gap-1" action={action}>
+      {state?.errors?.general && (
+        <p className="text-destructive text-sm">
+          {state.errors.general.join(" ")}
+        </p>
+      )}
       <div>
         <Label htmlFor="email">Email</Label>
         <Input
@@ -32,7 +41,9 @@ export default function LoginForm() {
           defaultValue={state?.form.email}
         />
         {state?.errors?.email && (
-          <p className="text-destructive text-xs">{state.errors.email}</p>
+          <p className="text-destructive text-xs">
+            {state.errors.email.join(" ")}
+          </p>
         )}
       </div>
 
