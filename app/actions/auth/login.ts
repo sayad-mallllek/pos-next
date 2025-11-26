@@ -3,101 +3,88 @@
 import { LoginFormStateType } from "@/components/forms/login";
 import { LoginFormSchema } from "@/components/forms/login/validations";
 
+import { LOGIN_FIELDS } from "@/lib/utils/auth.utils";
+import { LoginFormShape, LoginHandlerResult } from "@/types/auth.types";
+import { redirect } from "next/navigation";
 import {
   ApiErrorPayload,
   extractApiErrorMessage,
   extractFieldErrors,
   persistResponseCookies,
   resolveApiEndpoint,
+  withFormState,
 } from "./helpers";
-import type { z } from "zod";
-import { redirect } from "next/navigation";
-
-const LOGIN_FIELDS = ["email", "password"] as const;
-type LoginField = (typeof LOGIN_FIELDS)[number];
-type LoginFormShape = z.infer<typeof LoginFormSchema>;
-type LoginFormErrors = Partial<Record<LoginField | "general", string[]>>;
 
 const LOGIN_GENERIC_ERROR =
   "Unable to sign you in right now. Please try again.";
 
-function getTextValue(formData: FormData, field: LoginField) {
-  const value = formData.get(field);
+function asText(value: FormDataEntryValue | null) {
   return typeof value === "string" ? value : "";
 }
 
-function snapshotLoginForm(formData: FormData): LoginFormShape {
+function readLoginForm(formData: FormData): LoginFormShape {
   return {
-    email: getTextValue(formData, "email"),
-    password: getTextValue(formData, "password"),
+    email: asText(formData.get("email")),
+    password: asText(formData.get("password")),
   } satisfies LoginFormShape;
 }
 
-function buildLoginErrorState(
-  form: LoginFormShape,
-  errors: LoginFormErrors
-): NonNullable<LoginFormStateType> {
-  return {
-    form,
-    errors,
-  };
-}
+const loginAction = withFormState<LoginFormShape, LoginHandlerResult>(
+  readLoginForm,
+  async (form) => {
+    const validated = LoginFormSchema.safeParse(form);
 
-export async function login(
-  _state: LoginFormStateType,
+    if (!validated.success) {
+      return {
+        errors: validated.error.flatten().fieldErrors,
+      };
+    }
+
+    const endpoint = await resolveApiEndpoint("/api/login");
+
+    let response: Response;
+    try {
+      response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(validated.data),
+      });
+    } catch (error) {
+      console.error("Login request failed", error);
+      return {
+        errors: {
+          general: [LOGIN_GENERIC_ERROR],
+        },
+      };
+    }
+
+    if (!response.ok) {
+      const payload: ApiErrorPayload | null = await response
+        .json()
+        .catch(() => null);
+
+      const fieldErrors = extractFieldErrors(LOGIN_FIELDS, payload?.details);
+      const generalError =
+        extractApiErrorMessage(payload) ||
+        `Login failed with status ${response.status}`;
+
+      return {
+        errors: {
+          ...fieldErrors,
+          general: [generalError || LOGIN_GENERIC_ERROR],
+        },
+      };
+    }
+
+    await persistResponseCookies(response.headers.get("set-cookie"));
+
+    redirect("/dashboard");
+  }
+);
+
+export const login: (
+  state: LoginFormStateType,
   formData: FormData
-): Promise<LoginFormStateType> {
-  const formSnapshot = snapshotLoginForm(formData);
-  const validatedFields = LoginFormSchema.safeParse(formSnapshot);
-
-  if (!validatedFields.success) {
-    const validationErrors: LoginFormErrors = extractFieldErrors(
-      LOGIN_FIELDS,
-      validatedFields.error.issues
-    );
-
-    return buildLoginErrorState(formSnapshot, validationErrors);
-  }
-
-  const endpoint = await resolveApiEndpoint("/api/login");
-
-  let response: Response;
-  try {
-    response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(validatedFields.data),
-    });
-  } catch (error) {
-    console.error("Login request failed", error);
-    const networkErrors: LoginFormErrors = {
-      general: [LOGIN_GENERIC_ERROR],
-    };
-
-    return buildLoginErrorState(validatedFields.data, networkErrors);
-  }
-
-  if (!response.ok) {
-    const payload: ApiErrorPayload | null = await response
-      .json()
-      .catch(() => null);
-
-    const fieldErrors = extractFieldErrors(LOGIN_FIELDS, payload?.details);
-    const generalError =
-      extractApiErrorMessage(payload) ||
-      `Login failed with status ${response.status}`;
-
-    const collectedErrors: LoginFormErrors = {
-      ...fieldErrors,
-      general: [generalError || LOGIN_GENERIC_ERROR],
-    };
-
-    return buildLoginErrorState(validatedFields.data, collectedErrors);
-  }
-
-  await persistResponseCookies(response.headers.get("set-cookie"));
-
-  redirect("/dashboard");
-}
+) => Promise<LoginFormStateType> = loginAction;
