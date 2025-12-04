@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 
-import { getCurrentUser } from "@/lib/session";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,12 +10,6 @@ import {
 } from "@/components/ui/card";
 
 export default async function DashboardPage() {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    redirect("/login");
-  }
-
   const logout = async () => {
     "use server";
     // Invalidate the user's session here
@@ -30,9 +23,7 @@ export default async function DashboardPage() {
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">Dashboard</h1>
-            <p className="text-muted-foreground">
-              Welcome back, {user.name || user.email}!
-            </p>
+            <p className="text-muted-foreground">Welcome back!</p>
           </div>
           <form action={logout}>
             <Button type="submit" variant="outline">
@@ -61,14 +52,9 @@ export default async function DashboardPage() {
               <CardDescription>Your account details</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2 text-sm">
-                <p>
-                  <strong>Name:</strong> {user.name || "N/A"}
-                </p>
-                <p>
-                  <strong>Email:</strong> {user.email}
-                </p>
-              </div>
+              <p className="text-sm text-muted-foreground">
+                Manage your account information and settings here.
+              </p>
             </CardContent>
           </Card>
 
