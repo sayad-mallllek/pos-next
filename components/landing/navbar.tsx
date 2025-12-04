@@ -9,7 +9,9 @@ export function Navbar() {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-forest-500">
             <span className="text-lg font-bold text-white">P</span>
           </div>
-          <span className="text-lg font-semibold text-white">POS System</span>
+          <span className="text-sm sm:text-lg font-semibold text-white">
+            POS System
+          </span>
         </Link>
 
         <div className="hidden items-center gap-8 md:flex">
