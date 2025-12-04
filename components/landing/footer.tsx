@@ -9,18 +9,18 @@ const footerLinks = {
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-dark py-16">
+    <footer className="border-t border-forest-500/10 bg-forest-950 py-16">
       <div className="mx-auto max-w-7xl px-6">
         <div className="grid gap-8 md:grid-cols-5">
           {/* Logo */}
           <div className="md:col-span-1">
             <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500">
-                <span className="text-lg font-bold text-black">P</span>
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-forest-500">
+                <span className="text-lg font-bold text-white">P</span>
               </div>
               <span className="text-lg font-semibold text-white">POS</span>
             </Link>
-            <p className="mt-4 text-sm text-gray-500">
+            <p className="mt-4 text-sm text-forest-400/60">
               The modern point-of-sale platform for intelligent businesses.
             </p>
           </div>
@@ -34,7 +34,7 @@ export function Footer() {
                   <li key={link}>
                     <Link
                       href="#"
-                      className="text-sm text-gray-500 transition-colors hover:text-white"
+                      className="text-sm text-forest-400/60 transition-colors hover:text-forest-300"
                     >
                       {link}
                     </Link>
@@ -45,15 +45,21 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 md:flex-row">
-          <p className="text-sm text-gray-500">
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-forest-500/10 pt-8 md:flex-row">
+          <p className="text-sm text-forest-400/60">
             © {new Date().getFullYear()} POS System. All rights reserved.
           </p>
           <div className="flex gap-6">
-            <Link href="#" className="text-sm text-gray-500 hover:text-white">
+            <Link
+              href="#"
+              className="text-sm text-forest-400/60 hover:text-forest-300"
+            >
               Privacy Policy
             </Link>
-            <Link href="#" className="text-sm text-gray-500 hover:text-white">
+            <Link
+              href="#"
+              className="text-sm text-forest-400/60 hover:text-forest-300"
+            >
               Terms of Service
             </Link>
           </div>

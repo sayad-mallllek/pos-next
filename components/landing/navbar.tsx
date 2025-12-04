@@ -3,11 +3,11 @@ import { Button } from "@/components/ui/button";
 
 export function Navbar() {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-dark/80 backdrop-blur-md">
+    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-forest-500/10 bg-forest-950/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500">
-            <span className="text-lg font-bold text-black">P</span>
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-forest-500">
+            <span className="text-lg font-bold text-white">P</span>
           </div>
           <span className="text-lg font-semibold text-white">POS System</span>
         </Link>
@@ -15,19 +15,19 @@ export function Navbar() {
         <div className="hidden items-center gap-8 md:flex">
           <Link
             href="#features"
-            className="text-sm text-gray-400 transition-colors hover:text-white"
+            className="text-sm text-forest-300/70 transition-colors hover:text-white"
           >
             Features
           </Link>
           <Link
             href="#docs"
-            className="text-sm text-gray-400 transition-colors hover:text-white"
+            className="text-sm text-forest-300/70 transition-colors hover:text-white"
           >
             Documentation
           </Link>
           <Link
             href="#pricing"
-            className="text-sm text-gray-400 transition-colors hover:text-white"
+            className="text-sm text-forest-300/70 transition-colors hover:text-white"
           >
             Pricing
           </Link>
@@ -37,11 +37,14 @@ export function Navbar() {
           <Button
             asChild
             variant="ghost"
-            className="text-gray-300 hover:bg-white/10 hover:text-white"
+            className="text-forest-200 hover:bg-forest-500/10 hover:text-white"
           >
             <Link href="/login">Sign In</Link>
           </Button>
-          <Button asChild className="bg-white text-black hover:bg-gray-200">
+          <Button
+            asChild
+            className="bg-forest-500 text-white hover:bg-forest-400"
+          >
             <Link href="/signup">Start for free</Link>
           </Button>
         </div>

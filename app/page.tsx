@@ -8,7 +8,7 @@ import {
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-dark">
+    <main className="min-h-screen bg-forest-950">
       <Navbar />
       <Hero />
       <Features />
