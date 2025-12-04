@@ -14,7 +14,6 @@ export const auth = betterAuth({
     autoSignIn: true,
     sendResetPassword: async (data, request) => {
       console.log("Send reset password email to data:", data);
-      console.log("Send reset password email to request:", request);
     },
   },
   databaseHooks: {},

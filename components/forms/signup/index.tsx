@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { signup } from "@/app/actions/auth/signup";
 import { useActionState } from "react";
@@ -67,10 +68,9 @@ export default function SignupForm() {
         <Label htmlFor="password" className="text-gray-700">
           Password
         </Label>
-        <Input
+        <PasswordInput
           id="password"
           name="password"
-          type="password"
           placeholder="••••••••"
           disabled={isPending}
           required

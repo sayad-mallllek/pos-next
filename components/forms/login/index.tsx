@@ -3,6 +3,7 @@
 import { login } from "@/app/actions/auth/login";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { useActionState } from "react";
 import z from "zod";
@@ -57,15 +58,14 @@ export default function LoginForm() {
             Forgot password?
           </Link>
         </div>
-        <Input
+        <PasswordInput
           id="password"
           name="password"
-          type="password"
           placeholder="••••••••"
           disabled={isPending}
           required
           defaultValue={state?.form.password}
-          className=" rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500"
+          className="rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500"
         />
         {state?.errors?.password && (
           <p className="text-xs text-red-400">

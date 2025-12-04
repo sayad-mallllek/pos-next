@@ -27,7 +27,7 @@ export default function AuthLayout({
       </div>
 
       {/* Right side - Testimonial/Placeholder */}
-      <div className="hidden w-1/2 flex-col items-center justify-center border-l border-gray-100 bg-gray-50 p-12 lg:flex bg-[url('/images/blue-forest.jpg')] bg-cover" />
+      <div className="hidden w-1/2 flex-col items-center justify-center  bg-gray-50 p-12 lg:flex bg-[url('/images/blue-forest.jpg')] bg-cover" />
     </div>
   );
 }

@@ -2,13 +2,11 @@
 
 import { resetPassword } from "@/app/actions/auth/reset-password";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useActionState } from "react";
-import { ResetPasswordFormSchema } from "./validations";
+import { PasswordInput } from "@/components/ui/password-input";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import type { ResetPasswordFormStateType } from "./types";
+import { useActionState } from "react";
 
 export type { ResetPasswordFormStateType } from "./types";
 
@@ -27,12 +25,6 @@ export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
             Your password has been reset successfully.
           </p>
         </div>
-        <Link
-          href="/login"
-          className="inline-block text-sm font-medium text-forest-600 hover:text-forest-500"
-        >
-          ← Back to sign in
-        </Link>
       </div>
     );
   }
@@ -61,10 +53,9 @@ export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         <Label htmlFor="password" className="text-gray-700">
           New password
         </Label>
-        <Input
+        <PasswordInput
           id="password"
           name="password"
-          type="password"
           placeholder="••••••••"
           disabled={isPending}
           required
@@ -87,10 +78,9 @@ export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         <Label htmlFor="confirmPassword" className="text-gray-700">
           Confirm password
         </Label>
-        <Input
+        <PasswordInput
           id="confirmPassword"
           name="confirmPassword"
-          type="password"
           placeholder="••••••••"
           disabled={isPending}
           required
