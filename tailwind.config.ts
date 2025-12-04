@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config = {
-  darkMode: ["class", ".dark"],
+  darkMode: ["class", ".dark22"],
   content: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
@@ -24,6 +24,27 @@ const config = {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        dark: {
+          DEFAULT: "#0d1117",
+          lighter: "#161b22",
+          muted: "#21262d",
+          border: "#1c2128",
+        },
+        // Blue forest - a deep teal-blue reminiscent of forest shadows
+        forest: {
+          DEFAULT: "#127099",
+          50: "#e6f5fb",
+          100: "#cceaf6",
+          200: "#99d5ed",
+          300: "#66c0e4",
+          400: "#339be0",
+          500: "#127099",
+          600: "#0e5a73",
+          700: "#0b424f",
+          800: "#07302c",
+          900: "#04181a",
+          950: "#020b0d",
+        },
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",

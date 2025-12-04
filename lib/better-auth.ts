@@ -11,10 +11,13 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    autoSignIn: true,
+    sendResetPassword: async (data, request) => {
+      console.log("Send reset password email to data:", data);
+      console.log("Send reset password email to request:", request);
+    },
   },
+  databaseHooks: {},
 });
 
-export const authClient = createAuthClient({
-  /** The base URL of the server (optional if you're using the same domain) */
-  baseURL: "http://localhost:3000",
-});
+export const authClient = createAuthClient();

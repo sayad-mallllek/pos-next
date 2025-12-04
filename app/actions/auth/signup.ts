@@ -3,15 +3,10 @@
 import { SignupFormStateType } from "@/components/forms/signup";
 import { SignupFormSchema } from "@/components/forms/signup/validations";
 
-import {
-  ApiErrorPayload,
-  extractApiErrorMessage,
-  extractFieldErrors,
-  resolveApiEndpoint,
-  withFormState,
-} from "./helpers";
+import { withFormState } from "./helpers";
 import type { z } from "zod";
 import { redirect } from "next/navigation";
+import { authClient } from "@/lib/better-auth";
 
 const SIGNUP_FIELDS = ["name", "email", "password"] as const;
 type SignupField = (typeof SIGNUP_FIELDS)[number];
@@ -45,43 +40,21 @@ const signupAction = withFormState<SignupFormShape, SignupHandlerResult>(
       };
     }
 
-    const endpoint = await resolveApiEndpoint("/api/signup");
+    const response = await authClient.signUp.email({
+      email: validated.data.email,
+      password: validated.data.password,
+      name: validated.data.name,
+      callbackURL: "/dashboard",
+    });
 
-    let response: Response;
-    try {
-      response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(validated.data),
-      });
-    } catch (error) {
-      console.error("Signup request failed", error);
+    console.log("Signup response:", response);
+
+    if (response.error)
       return {
         errors: {
-          general: [SIGNUP_GENERIC_ERROR],
+          general: [response.error.message || SIGNUP_GENERIC_ERROR],
         },
       };
-    }
-
-    if (!response.ok) {
-      const payload: ApiErrorPayload | null = await response
-        .json()
-        .catch(() => null);
-
-      const fieldErrors = extractFieldErrors(SIGNUP_FIELDS, payload?.details);
-      const generalError =
-        extractApiErrorMessage(payload) ||
-        `Signup failed with status ${response.status}`;
-
-      return {
-        errors: {
-          ...fieldErrors,
-          general: [generalError || SIGNUP_GENERIC_ERROR],
-        },
-      };
-    }
 
     redirect("/login");
   }

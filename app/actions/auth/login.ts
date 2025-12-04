@@ -5,15 +5,8 @@ import { LoginFormSchema } from "@/components/forms/login/validations";
 
 import { LOGIN_FIELDS } from "@/lib/utils/auth.utils";
 import { LoginFormShape, LoginHandlerResult } from "@/types/auth.types";
-import { redirect } from "next/navigation";
-import {
-  ApiErrorPayload,
-  extractApiErrorMessage,
-  extractFieldErrors,
-  persistResponseCookies,
-  resolveApiEndpoint,
-  withFormState,
-} from "./helpers";
+import { withFormState } from "./helpers";
+import { authClient } from "@/lib/better-auth";
 
 const LOGIN_GENERIC_ERROR =
   "Unable to sign you in right now. Please try again.";
@@ -40,47 +33,19 @@ const loginAction = withFormState<LoginFormShape, LoginHandlerResult>(
       };
     }
 
-    const endpoint = await resolveApiEndpoint("/api/login");
+    const response = await authClient.signIn.email({
+      email: validated.data.email,
+      password: validated.data.password,
+      callbackURL: "/dashboard",
+      rememberMe: true,
+    });
 
-    let response: Response;
-    try {
-      response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(validated.data),
-      });
-    } catch (error) {
-      console.error("Login request failed", error);
+    if (response.error)
       return {
         errors: {
-          general: [LOGIN_GENERIC_ERROR],
+          general: [response.error.message || LOGIN_GENERIC_ERROR],
         },
       };
-    }
-
-    if (!response.ok) {
-      const payload: ApiErrorPayload | null = await response
-        .json()
-        .catch(() => null);
-
-      const fieldErrors = extractFieldErrors(LOGIN_FIELDS, payload?.details);
-      const generalError =
-        extractApiErrorMessage(payload) ||
-        `Login failed with status ${response.status}`;
-
-      return {
-        errors: {
-          ...fieldErrors,
-          general: [generalError || LOGIN_GENERIC_ERROR],
-        },
-      };
-    }
-
-    await persistResponseCookies(response.headers.get("set-cookie"));
-
-    redirect("/dashboard");
   }
 );
 
