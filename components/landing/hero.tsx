@@ -45,14 +45,14 @@ export function Hero() {
         </p>
 
         {/* CTA Input */}
-        <div className="mt-10 flex w-full max-w-md items-center gap-2 rounded-full bg-forest-900/50 p-1.5 ring-1 ring-forest-500/20 backdrop-blur-sm">
+        <div className="mt-10 flex w-full justify-between max-w-md items-center gap-2 rounded-full bg-forest-900/50 p-1.5 ring-1 ring-forest-500/20 backdrop-blur-sm">
           <input
             type="email"
             placeholder="Email address"
-            className="flex-1 bg-transparent px-4 py-2 text-sm text-white placeholder-forest-300/50 outline-none"
+            className="w-30 bg-transparent px-4 py-2 text-sm text-white placeholder-forest-300/50 outline-none"
           />
-          <Link href="/signup">
-            <Button className="rounded-full bg-forest-500 px-6 text-white hover:bg-forest-400">
+          <Link className="grow flex justify-end" href="/signup">
+            <Button className="ml-auto rounded-full bg-forest-500 px-6 text-white hover:bg-forest-400">
               Start now
             </Button>
           </Link>
