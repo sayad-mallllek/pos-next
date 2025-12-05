@@ -11,9 +11,9 @@ export function Footer() {
   return (
     <footer className="border-t border-forest-500/10 bg-forest-950 py-16">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="grid gap-8 md:grid-cols-5">
+        <div className="grid gap-8 grid-cols-2 md:grid-cols-5">
           {/* Logo */}
-          <div className="md:col-span-1">
+          <div className="md:col-span-1 col-span-2">
             <Link href="/" className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-forest-500">
                 <span className="text-lg font-bold text-white">P</span>

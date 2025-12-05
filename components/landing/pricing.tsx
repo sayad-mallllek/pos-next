@@ -44,42 +44,6 @@ export function Pricing() {
 
         {/* Pricing Cards */}
         <div className="mt-16 flex flex-col items-center justify-center gap-8 lg:flex-row lg:items-stretch">
-          {/* Enterprise Card - Smaller */}
-          <div className="w-full max-w-sm rounded-2xl border border-forest-500/20 bg-forest-900/50 p-8 backdrop-blur-sm transition-all hover:border-forest-500/40">
-            <div className="text-center">
-              <h3 className="text-lg font-semibold text-forest-300">
-                Enterprise
-              </h3>
-              <div className="mt-4 flex items-baseline justify-center gap-1">
-                <span className="text-4xl font-bold text-white">Custom</span>
-              </div>
-              <p className="mt-2 text-sm text-forest-200">
-                Tailored solutions for large organizations
-              </p>
-            </div>
-
-            <ul className="mt-8 space-y-4">
-              {enterpriseFeatures.map((feature) => (
-                <li key={feature} className="flex items-center gap-3">
-                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-forest-500/20">
-                    <Check className="h-3 w-3 text-forest-400" />
-                  </div>
-                  <span className="text-sm text-forest-300/80">{feature}</span>
-                </li>
-              ))}
-            </ul>
-
-            <div className="mt-8">
-              <Button
-                asChild
-                variant="outline"
-                className="w-full border-forest-500/30 bg-transparent text-forest-300 hover:bg-forest-500/10 hover:text-white"
-              >
-                <Link href="/contact">Contact Sales</Link>
-              </Button>
-            </div>
-          </div>
-
           {/* Pro Card - Larger with meteor border effect */}
           <div className="relative w-full max-w-sm scale-100 lg:scale-110">
             {/* Meteor border container */}
@@ -167,6 +131,42 @@ export function Pricing() {
               <p className="mt-4 text-center text-xs text-forest-400/60">
                 14-day free trial • No credit card required
               </p>
+            </div>
+          </div>
+
+          {/* Enterprise Card - Smaller */}
+          <div className="w-full max-w-sm rounded-2xl border border-forest-500/20 bg-forest-900/50 p-8 backdrop-blur-sm transition-all hover:border-forest-500/40">
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-forest-300">
+                Enterprise
+              </h3>
+              <div className="mt-4 flex items-baseline justify-center gap-1">
+                <span className="text-4xl font-bold text-white">Custom</span>
+              </div>
+              <p className="mt-2 text-sm text-forest-200">
+                Tailored solutions for large organizations
+              </p>
+            </div>
+
+            <ul className="mt-8 space-y-4">
+              {enterpriseFeatures.map((feature) => (
+                <li key={feature} className="flex items-center gap-3">
+                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-forest-500/20">
+                    <Check className="h-3 w-3 text-forest-400" />
+                  </div>
+                  <span className="text-sm text-forest-300/80">{feature}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-8">
+              <Button
+                asChild
+                variant="outline"
+                className="w-full border-forest-500/30 bg-transparent text-forest-300 hover:bg-forest-500/10 hover:text-white"
+              >
+                <Link href="/contact">Contact Sales</Link>
+              </Button>
             </div>
           </div>
         </div>
