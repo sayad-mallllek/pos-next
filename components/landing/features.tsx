@@ -43,8 +43,8 @@ export function Features() {
             <div className="mt-8 rounded-xl bg-forest-950 p-4">
               <div className="flex items-center gap-3">
                 <Sparkles className="h-5 w-5 text-forest-400" />
-                <div className="h-3 flex-1 rounded-full bg-gradient-to-r from-forest-500 via-forest-400 to-forest-500">
-                  <div className="h-full w-1/3 rounded-full bg-forest-800" />
+                <div className="h-3 flex-1 rounded-full  bg-forest-800 ">
+                  <div className="h-full w-1/3 rounded-full bg-gradient-to-r from-forest-500 via-forest-400 to-forest-500" />
                 </div>
                 <Zap className="h-5 w-5 text-forest-400" />
               </div>
