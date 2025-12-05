@@ -1,10 +1,4 @@
-import {
-  Navbar,
-  Hero,
-  Features,
-  Enterprise,
-  Footer,
-} from "@/components/landing";
+import { Features, Footer, Hero, Navbar, Pricing } from "@/components/landing";
 
 export default function HomePage() {
   return (
@@ -12,7 +6,7 @@ export default function HomePage() {
       <Navbar />
       <Hero />
       <Features />
-      <Enterprise />
+      <Pricing />
       <Footer />
     </main>
   );

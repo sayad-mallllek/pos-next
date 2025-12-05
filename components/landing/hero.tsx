@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Fireflies } from "./fireflies";
 
 export function Hero() {
   return (
@@ -12,6 +13,9 @@ export function Hero() {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-forest-950/80 via-forest-900/60 to-forest-950" />
       </div>
+
+      {/* Fireflies Effect */}
+      <Fireflies count={35} />
 
       {/* Aurora Background Effect */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -72,9 +76,9 @@ export function Hero() {
             </div>
 
             {/* Window Content */}
-            <div className="grid grid-cols-12 gap-4 p-4">
+            <div className="flex flex-col sm:grid grid-cols-12 gap-4 p-4">
               {/* Sidebar */}
-              <div className="col-span-3 space-y-3">
+              <div className="flex gap-2 overflow-hidden sm:block col-span-3 space-y-3">
                 <div className="flex items-center gap-2 rounded-lg bg-forest-500/20 px-3 py-2">
                   <div className="h-4 w-4 rounded bg-forest-500" />
                   <span className="text-sm text-forest-300">Dashboard</span>

@@ -102,9 +102,9 @@ export function Features() {
           </div>
 
           {/* Dashboard Preview */}
-          <div className="mt-8 grid grid-cols-12 gap-4 rounded-xl bg-forest-950 p-6">
+          <div className="mt-8 flex flex-col sm:grid grid-cols-12 gap-4 rounded-xl bg-forest-950 p-6">
             {/* Left Column */}
-            <div className="col-span-3 space-y-3">
+            <div className="flex flex-col items-center sm:items-start col-span-3 gap-3">
               <div className="flex items-center gap-2 text-xs text-forest-400/70">
                 <span>📖</span> QUICK START GUIDE
               </div>
