@@ -77,3 +77,266 @@ model Verification {
 
   @@map("verification")
 }
+
+// ==========================================
+// CURRENCY & SETTINGS
+// ==========================================
+
+model Currency {
+  id            String   @id @default(cuid())
+  code          String   @unique // ISO 4217: USD, EUR, LBP, etc.
+  name          String // US Dollar, Euro, Lebanese Pound
+  symbol        String // $, €, ل.ل
+  exchangeRate  Decimal  @db.Decimal(18, 8) // Rate relative to base currency
+  isBase        Boolean  @default(false) // Base currency has rate = 1
+  isActive      Boolean  @default(true)
+  decimalPlaces Int      @default(2)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  prices ProductPrice[]
+
+  @@map("currency")
+}
+
+// ==========================================
+// PRODUCT MANAGEMENT
+// ==========================================
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  image       String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Self-referencing for nested categories
+  parentId String?
+  parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryHierarchy")
+
+  products Product[]
+
+  @@map("category")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  sku         String   @unique // Stock Keeping Unit
+  barcode     String?  @unique // EAN/UPC barcode
+  qrCode      String?  @unique // QR code data
+  image       String?
+  images      String[] // Additional product images
+
+  // Cost price for profit calculation
+  costPrice Decimal? @db.Decimal(10, 2)
+
+  // Product attributes
+  weight     Decimal? @db.Decimal(10, 3)
+  weightUnit String?  @default("kg")
+
+  // Stock management
+  trackStock     Boolean @default(true)
+  stockQuantity  Int     @default(0)
+  lowStockAlert  Int     @default(10)
+  allowBackorder Boolean @default(false)
+
+  // Flags
+  isActive  Boolean @default(true)
+  isTaxable Boolean @default(true)
+
+  // SEO & Organization
+  tags String[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  variants        ProductVariant[]
+  prices          ProductPrice[]
+  attributeValues ProductAttributeValue[]
+
+  @@map("product")
+}
+
+model ProductVariant {
+  id      String  @id @default(cuid())
+  name    String // e.g., "Red / Large"
+  sku     String  @unique
+  barcode String? @unique
+  qrCode  String? @unique
+  image   String?
+
+  // Cost price for this variant
+  costPrice Decimal? @db.Decimal(10, 2)
+
+  // Stock for this specific variant
+  stockQuantity Int @default(0)
+
+  isActive  Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  optionValues VariantOptionValue[]
+  prices       ProductPrice[]
+
+  @@map("product_variant")
+}
+
+// ==========================================
+// VARIANT OPTIONS (Size, Color, etc.)
+// ==========================================
+
+model ProductOption {
+  id        String   @id @default(cuid())
+  name      String   @unique // "Size", "Color", "Material"
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  values ProductOptionValue[]
+
+  @@map("product_option")
+}
+
+model ProductOptionValue {
+  id        String   @id @default(cuid())
+  value     String // "Small", "Medium", "Large" or "Red", "Blue"
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  optionId String
+  option   ProductOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+
+  variantOptions VariantOptionValue[]
+
+  @@unique([optionId, value])
+  @@map("product_option_value")
+}
+
+model VariantOptionValue {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  variantId     String
+  variant       ProductVariant     @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  optionValueId String
+  optionValue   ProductOptionValue @relation(fields: [optionValueId], references: [id], onDelete: Cascade)
+
+  @@unique([variantId, optionValueId])
+  @@map("variant_option_value")
+}
+
+// ==========================================
+// PRODUCT ATTRIBUTES (non-variant properties)
+// ==========================================
+
+model ProductAttribute {
+  id        String        @id @default(cuid())
+  name      String        @unique // "Brand", "Warranty", "Origin Country"
+  type      AttributeType @default(TEXT)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  values ProductAttributeValue[]
+
+  @@map("product_attribute")
+}
+
+model ProductAttributeValue {
+  id        String   @id @default(cuid())
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  productId   String
+  product     Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
+  attributeId String
+  attribute   ProductAttribute @relation(fields: [attributeId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, attributeId])
+  @@map("product_attribute_value")
+}
+
+enum AttributeType {
+  TEXT
+  NUMBER
+  BOOLEAN
+  DATE
+}
+
+// ==========================================
+// PRICING (Multi-currency support)
+// ==========================================
+
+model ProductPrice {
+  id    String  @id @default(cuid())
+  price Decimal @db.Decimal(18, 2)
+
+  // Optional sale pricing
+  salePrice Decimal?  @db.Decimal(18, 2)
+  saleStart DateTime?
+  saleEnd   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Can be set for product or specific variant
+  productId String?
+  product   Product?        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variantId String?
+  variant   ProductVariant? @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  currencyId String
+  currency   Currency @relation(fields: [currencyId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, currencyId])
+  @@unique([variantId, currencyId])
+  @@map("product_price")
+}
+
+// ==========================================
+// INVENTORY LOG (Audit Trail)
+// ==========================================
+
+model InventoryLog {
+  id             String             @id @default(cuid())
+  productId      String
+  variantId      String?
+  quantityBefore Int
+  quantityAfter  Int
+  quantityChange Int
+  reason         InventoryLogReason
+  reference      String? // Order ID, adjustment note, etc.
+  notes          String?
+  createdAt      DateTime           @default(now())
+
+  @@map("inventory_log")
+}
+
+enum InventoryLogReason {
+  SALE
+  RETURN
+  RESTOCK
+  ADJUSTMENT
+  DAMAGE
+  THEFT
+  EXPIRED
+  INITIAL_COUNT
+}

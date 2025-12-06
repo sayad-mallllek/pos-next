@@ -1,4 +1,5 @@
 import { betterAuth } from "better-auth";
+import { nextCookies } from "better-auth/next-js";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma";
 import { createAuthClient } from "better-auth/react";
@@ -16,7 +17,7 @@ export const auth = betterAuth({
       console.log("Send reset password email to data:", data);
     },
   },
-  databaseHooks: {},
+  plugins: [nextCookies()],
 });
 
 export const authClient = createAuthClient();

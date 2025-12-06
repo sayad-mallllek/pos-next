@@ -1,10 +1,18 @@
+import { auth } from "@/lib/better-auth";
+import { headers } from "next/headers";
 import Link from "next/link";
 
-export default function AuthLayout({
+export default async function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  console.log("AuthLayout session:", session);
+
   return (
     <div className="flex min-h-screen">
       {/* Left side - Form */}
