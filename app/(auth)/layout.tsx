@@ -1,3 +1,4 @@
+import { Logo } from "@/components/landing/logo";
 import { auth } from "@/lib/better-auth";
 import { headers } from "next/headers";
 import Link from "next/link";
@@ -20,11 +21,9 @@ export default async function AuthLayout({
         {/* Logo */}
         <div className="mb-12 sm:mb-32">
           <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-forest-500">
-              <span className="text-lg font-bold text-white">P</span>
-            </div>
+            <Logo />
             <span className="text-lg font-semibold text-gray-900">
-              POS System
+              FireFlyee
             </span>
           </Link>
         </div>
