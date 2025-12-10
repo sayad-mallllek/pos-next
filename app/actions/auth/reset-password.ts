@@ -2,17 +2,16 @@
 import "server-only";
 
 import { ResetPasswordFormStateType } from "@/components/forms/reset-password/types";
-import { ResetPasswordFormSchema } from "@/components/forms/reset-password/validations";
+import {
+  ResetPasswordFormShape,
+  validateResetPasswordForm,
+} from "@/components/forms/reset-password/validations";
 import { tryCatch, withFormState } from "./helpers";
-import type { z } from "zod";
 import { auth } from "@/lib/better-auth";
 import { headers } from "next/headers";
 
-type ResetPasswordFormShape = z.infer<typeof ResetPasswordFormSchema> & {
-  token: string;
-};
 type ResetPasswordFormErrors = Partial<
-  Record<keyof ResetPasswordFormShape | "general", string[]>
+  Record<keyof ResetPasswordFormShape | "general" | "token", string[]>
 >;
 type ResetPasswordHandlerResult = {
   errors?: ResetPasswordFormErrors;
@@ -49,11 +48,11 @@ const resetPasswordAction = withFormState<
     };
   }
 
-  const validated = ResetPasswordFormSchema.safeParse(form);
+  const validated = validateResetPasswordForm(form);
 
   if (!validated.success) {
     return {
-      errors: validated.error.flatten().fieldErrors,
+      errors: validated.errors,
     };
   }
 

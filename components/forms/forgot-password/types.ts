@@ -1,14 +1,13 @@
-import type { z } from "zod";
-import type { ForgotPasswordFormSchema } from "./validations";
+import type { ForgotPasswordFormShape } from "./validations";
 
 type ForgotPasswordErrors = Partial<
-  Record<keyof z.infer<typeof ForgotPasswordFormSchema> | "general", string[]>
+  Record<keyof ForgotPasswordFormShape | "general", string[]>
 >;
 
 export type ForgotPasswordFormStateType =
   | {
       errors?: ForgotPasswordErrors;
       success?: boolean;
-      form: z.infer<typeof ForgotPasswordFormSchema>;
+      form: ForgotPasswordFormShape;
     }
   | undefined;

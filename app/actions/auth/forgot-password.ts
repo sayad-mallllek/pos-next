@@ -2,13 +2,14 @@
 import "server-only";
 
 import { ForgotPasswordFormStateType } from "@/components/forms/forgot-password/types";
-import { ForgotPasswordFormSchema } from "@/components/forms/forgot-password/validations";
+import {
+  ForgotPasswordFormShape,
+  validateForgotPasswordForm,
+} from "@/components/forms/forgot-password/validations";
 import { tryCatch, withFormState } from "./helpers";
-import type { z } from "zod";
 import { auth } from "@/lib/better-auth";
 import { headers } from "next/headers";
 
-type ForgotPasswordFormShape = z.infer<typeof ForgotPasswordFormSchema>;
 type ForgotPasswordFormErrors = Partial<
   Record<keyof ForgotPasswordFormShape | "general", string[]>
 >;
@@ -34,11 +35,11 @@ const forgotPasswordAction = withFormState<
   ForgotPasswordFormShape,
   ForgotPasswordHandlerResult
 >(readForgotPasswordForm, async (form) => {
-  const validated = ForgotPasswordFormSchema.safeParse(form);
+  const validated = validateForgotPasswordForm(form);
 
   if (!validated.success) {
     return {
-      errors: validated.error.flatten().fieldErrors,
+      errors: validated.errors,
     };
   }
 

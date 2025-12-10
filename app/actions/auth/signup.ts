@@ -2,17 +2,18 @@
 import "server-only";
 
 import { SignupFormStateType } from "@/components/forms/signup";
-import { SignupFormSchema } from "@/components/forms/signup/validations";
+import {
+  SignupFormShape,
+  validateSignupForm,
+} from "@/components/forms/signup/validations";
 
 import { tryCatch, withFormState } from "./helpers";
-import type { z } from "zod";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/better-auth";
 import { headers } from "next/headers";
 
 const SIGNUP_FIELDS = ["name", "email", "password"] as const;
 type SignupField = (typeof SIGNUP_FIELDS)[number];
-type SignupFormShape = z.infer<typeof SignupFormSchema>;
 type SignupFormErrors = Partial<Record<SignupField | "general", string[]>>;
 type SignupHandlerResult = { errors?: SignupFormErrors };
 
@@ -34,11 +35,11 @@ function readSignupForm(formData: FormData): SignupFormShape {
 const signupAction = withFormState<SignupFormShape, SignupHandlerResult>(
   readSignupForm,
   async (form) => {
-    const validated = SignupFormSchema.safeParse(form);
+    const validated = validateSignupForm(form);
 
     if (!validated.success) {
       return {
-        errors: validated.error.flatten().fieldErrors,
+        errors: validated.errors,
       };
     }
 

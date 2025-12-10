@@ -6,19 +6,16 @@ import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { useActionState } from "react";
-import z from "zod";
-import { LoginFormSchema } from "./validations";
+import { LoginFormShape } from "./validations";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
-type LoginErrors = Partial<
-  Record<keyof z.infer<typeof LoginFormSchema> | "general", string[]>
->;
+type LoginErrors = Partial<Record<keyof LoginFormShape | "general", string[]>>;
 
 export type LoginFormStateType =
   | {
       errors?: LoginErrors;
-      form: z.infer<typeof LoginFormSchema>;
+      form: LoginFormShape;
     }
   | undefined;
 

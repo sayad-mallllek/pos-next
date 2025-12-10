@@ -2,7 +2,7 @@
 import "server-only";
 
 import { LoginFormStateType } from "@/components/forms/login";
-import { LoginFormSchema } from "@/components/forms/login/validations";
+import { validateLoginForm } from "@/components/forms/login/validations";
 
 import { auth } from "@/lib/better-auth";
 import { LoginFormShape, LoginHandlerResult } from "@/types/auth.types";
@@ -26,12 +26,10 @@ function readLoginForm(formData: FormData): LoginFormShape {
 const loginAction = withFormState<LoginFormShape, LoginHandlerResult>(
   readLoginForm,
   async (form) => {
-    const validated = LoginFormSchema.safeParse(form);
+    const validated = validateLoginForm(form);
 
     if (!validated.success) {
-      return {
-        errors: validated.error.flatten().fieldErrors,
-      };
+      return { errors: validated.errors };
     }
 
     const { response, error } = await tryCatch(async () =>

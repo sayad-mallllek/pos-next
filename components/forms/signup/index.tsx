@@ -6,18 +6,17 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { signup } from "@/app/actions/auth/signup";
 import { useActionState } from "react";
-import z from "zod";
-import { SignupFormSchema } from "./validations";
+import { SignupFormShape } from "./validations";
 import { cn } from "@/lib/utils";
 
 type SignupErrors = Partial<
-  Record<keyof z.infer<typeof SignupFormSchema> | "general", string[]>
+  Record<keyof SignupFormShape | "general", string[]>
 >;
 
 export type SignupFormStateType =
   | {
       errors?: SignupErrors;
-      form: z.infer<typeof SignupFormSchema>;
+      form: SignupFormShape;
     }
   | undefined;
 
