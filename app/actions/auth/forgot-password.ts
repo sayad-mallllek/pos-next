@@ -1,10 +1,12 @@
 "use server";
+import "server-only";
 
 import { ForgotPasswordFormStateType } from "@/components/forms/forgot-password/types";
 import { ForgotPasswordFormSchema } from "@/components/forms/forgot-password/validations";
-import { withFormState } from "./helpers";
+import { tryCatch, withFormState } from "./helpers";
 import type { z } from "zod";
-import { authClient } from "@/lib/better-auth";
+import { auth } from "@/lib/better-auth";
+import { headers } from "next/headers";
 
 type ForgotPasswordFormShape = z.infer<typeof ForgotPasswordFormSchema>;
 type ForgotPasswordFormErrors = Partial<
@@ -40,26 +42,23 @@ const forgotPasswordAction = withFormState<
     };
   }
 
-  try {
-    const response = await authClient.forgetPassword({
-      email: validated.data.email,
-      redirectTo: "/reset-password",
-    });
-
-    if (response.error) {
-      // Don't reveal if email exists or not for security
-      // Always show success message
-      return { success: true };
-    }
-
-    return { success: true };
-  } catch {
-    return {
-      errors: {
-        general: [FORGOT_PASSWORD_GENERIC_ERROR],
+  const { response, error } = await tryCatch(async () =>
+    auth.api.forgetPassword({
+      body: {
+        email: validated.data.email,
+        redirectTo: "/reset-password",
       },
-    };
+      headers: await headers(),
+    })
+  );
+
+  if (error) {
+    // Don't reveal if email exists or not for security
+    // Always show success message
+    return { success: true };
   }
+
+  return { success: true };
 });
 
 export const forgotPassword: (

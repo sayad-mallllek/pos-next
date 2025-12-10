@@ -1,10 +1,12 @@
 "use server";
+import "server-only";
 
 import { ResetPasswordFormStateType } from "@/components/forms/reset-password/types";
 import { ResetPasswordFormSchema } from "@/components/forms/reset-password/validations";
-import { withFormState } from "./helpers";
+import { tryCatch, withFormState } from "./helpers";
 import type { z } from "zod";
-import { authClient } from "@/lib/better-auth";
+import { auth } from "@/lib/better-auth";
+import { headers } from "next/headers";
 
 type ResetPasswordFormShape = z.infer<typeof ResetPasswordFormSchema> & {
   token: string;
@@ -55,42 +57,37 @@ const resetPasswordAction = withFormState<
     };
   }
 
-  try {
-    const response = await authClient.resetPassword({
-      newPassword: validated.data.password,
-      token,
-    });
+  const { response, error } = await tryCatch(async () =>
+    auth.api.resetPassword({
+      body: {
+        newPassword: validated.data.password,
+        token,
+      },
+      headers: await headers(),
+    })
+  );
 
-    if (response.error) {
-      // Check for specific error types
-      if (
-        response.error.message?.toLowerCase().includes("token") ||
-        response.error.message?.toLowerCase().includes("expired")
-      ) {
-        return {
-          errors: {
-            token: [
-              "This reset link has expired or is invalid. Please request a new one.",
-            ],
-          },
-        };
-      }
-
+  if (error) {
+    if (
+      error.message?.toLowerCase().includes("token") ||
+      error.message?.toLowerCase().includes("expired")
+    ) {
       return {
         errors: {
-          general: [response.error.message || RESET_PASSWORD_GENERIC_ERROR],
+          token: [
+            "This reset link has expired or is invalid. Please request a new link.",
+          ],
         },
       };
     }
-
-    return { success: true };
-  } catch {
     return {
       errors: {
         general: [RESET_PASSWORD_GENERIC_ERROR],
       },
     };
   }
+
+  return { success: true };
 });
 
 export const resetPassword: (

@@ -1,12 +1,13 @@
 "use server";
+import "server-only";
 
 import { LoginFormStateType } from "@/components/forms/login";
 import { LoginFormSchema } from "@/components/forms/login/validations";
 
-import { LOGIN_FIELDS } from "@/lib/utils/auth.utils";
+import { auth } from "@/lib/better-auth";
 import { LoginFormShape, LoginHandlerResult } from "@/types/auth.types";
-import { withFormState } from "./helpers";
-import { authClient } from "@/lib/better-auth";
+import { headers } from "next/headers";
+import { tryCatch, withFormState } from "./helpers";
 
 const LOGIN_GENERIC_ERROR =
   "Unable to sign you in right now. Please try again.";
@@ -33,17 +34,22 @@ const loginAction = withFormState<LoginFormShape, LoginHandlerResult>(
       };
     }
 
-    const response = await authClient.signIn.email({
-      email: validated.data.email,
-      password: validated.data.password,
-      callbackURL: "/dashboard",
-      rememberMe: true,
-    });
+    const { response, error } = await tryCatch(async () =>
+      auth.api.signInEmail({
+        body: {
+          email: validated.data.email,
+          password: validated.data.password,
+          callbackURL: "/dashboard",
+          rememberMe: true,
+        },
+        headers: await headers(),
+      })
+    );
 
-    if (response.error)
+    if (error || !response)
       return {
         errors: {
-          general: [response.error.message || LOGIN_GENERIC_ERROR],
+          general: [error.message || LOGIN_GENERIC_ERROR],
         },
       };
   }

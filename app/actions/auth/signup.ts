@@ -1,12 +1,14 @@
 "use server";
+import "server-only";
 
 import { SignupFormStateType } from "@/components/forms/signup";
 import { SignupFormSchema } from "@/components/forms/signup/validations";
 
-import { withFormState } from "./helpers";
+import { tryCatch, withFormState } from "./helpers";
 import type { z } from "zod";
 import { redirect } from "next/navigation";
-import { authClient } from "@/lib/better-auth";
+import { auth } from "@/lib/better-auth";
+import { headers } from "next/headers";
 
 const SIGNUP_FIELDS = ["name", "email", "password"] as const;
 type SignupField = (typeof SIGNUP_FIELDS)[number];
@@ -40,21 +42,25 @@ const signupAction = withFormState<SignupFormShape, SignupHandlerResult>(
       };
     }
 
-    const response = await authClient.signUp.email({
-      email: validated.data.email,
-      password: validated.data.password,
-      name: validated.data.name,
-      callbackURL: "/dashboard",
-    });
+    const { error } = await tryCatch(async () =>
+      auth.api.signUpEmail({
+        body: {
+          email: validated.data.email,
+          password: validated.data.password,
+          name: validated.data.name,
+          callbackURL: "/dashboard",
+        },
+        headers: await headers(),
+      })
+    );
 
-    console.log("Signup response:", response);
-
-    if (response.error)
+    if (error) {
       return {
         errors: {
-          general: [response.error.message || SIGNUP_GENERIC_ERROR],
+          general: [error.message || SIGNUP_GENERIC_ERROR],
         },
       };
+    }
 
     redirect("/login");
   }

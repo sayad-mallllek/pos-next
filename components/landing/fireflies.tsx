@@ -10,6 +10,7 @@ interface Firefly {
   duration: number;
   delay: number;
   opacity: number;
+  glowDuration: number;
 }
 
 export function Fireflies({ count = 30 }: { count?: number }) {
@@ -27,6 +28,7 @@ export function Fireflies({ count = 30 }: { count?: number }) {
           duration: Math.random() * 10 + 10, // 10-20s
           delay: Math.random() * 10, // 0-10s delay
           opacity: Math.random() * 0.5 + 0.3, // 0.3-0.8
+          glowDuration: 2 + Math.random() * 2, // 2-4s
         });
       }
       setFireflies(newFireflies);
@@ -54,9 +56,7 @@ export function Fireflies({ count = 30 }: { count?: number }) {
             className="h-full w-full rounded-full bg-forest-300 shadow-[0_0_10px_2px_rgba(102,192,228,0.6),0_0_20px_4px_rgba(102,192,228,0.3)]"
             style={{
               opacity: firefly.opacity,
-              animation: `firefly-glow ${
-                2 + Math.random() * 2
-              }s ease-in-out infinite`,
+              animation: `firefly-glow ${firefly.glowDuration}s ease-in-out infinite`,
               //   animationDelay: `${firefly.delay}s`,
             }}
           />

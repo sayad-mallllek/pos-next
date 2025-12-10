@@ -20,4 +20,8 @@ export const auth = betterAuth({
   plugins: [nextCookies()],
 });
 
-export const authClient = createAuthClient();
+export const authClient = createAuthClient({
+  baseURL: process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
+  plugins: [nextCookies()],
+  basePath: "/api/auth",
+});

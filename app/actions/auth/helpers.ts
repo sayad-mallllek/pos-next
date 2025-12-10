@@ -30,3 +30,24 @@ export function withFormState<
     } as { form: TForm } & (TResult extends void ? {} : TResult);
   };
 }
+
+export async function tryCatch<T>(callback: () => Promise<T>): Promise<
+  | { response: T; error: null }
+  | {
+      response: null;
+      error: { message?: string };
+    }
+> {
+  // ): Promise<{ response: T | null; error: {message?: string} | null }> {
+  try {
+    const response = await callback();
+    return { response, error: null };
+  } catch (error) {
+    return {
+      response: null,
+      error: {
+        message: error instanceof Error ? error.message : String(error),
+      },
+    };
+  }
+}

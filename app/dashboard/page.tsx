@@ -1,5 +1,3 @@
-import { redirect } from "next/navigation";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,12 +6,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { auth } from "@/lib/better-auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 export default async function DashboardPage() {
   const logout = async () => {
     "use server";
     // Invalidate the user's session here
     // This is a placeholder; implement your session invalidation logic
+    await auth.api.signOut({
+      headers: await headers(),
+    });
     redirect("/login");
   };
 
