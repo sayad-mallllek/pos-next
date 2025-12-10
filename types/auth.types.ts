@@ -1,4 +1,3 @@
-import { LoginFormShape } from "@/components/forms/login/validations";
 import { LOGIN_FIELDS } from "@/lib/utils/auth.utils";
 
 export type LoginField = (typeof LOGIN_FIELDS)[number];

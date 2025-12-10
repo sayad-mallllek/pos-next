@@ -2,10 +2,13 @@
 import "server-only";
 
 import { LoginFormStateType } from "@/components/forms/login";
-import { validateLoginForm } from "@/components/forms/login/validations";
+import {
+  LoginFormShape,
+  validateLoginForm,
+} from "@/components/forms/login/validations";
 
 import { auth } from "@/lib/better-auth";
-import { LoginFormShape, LoginHandlerResult } from "@/types/auth.types";
+import { LoginHandlerResult } from "@/types/auth.types";
 import { headers } from "next/headers";
 import { tryCatch, withFormState } from "./helpers";
 
