@@ -5,7 +5,7 @@ export function Logo(props: Partial<React.ComponentProps<typeof Image>>) {
   return (
     <Image
       alt="fireflyee-logo-new-transparent"
-      src={"/images/fireflyee-logo-new-transparent.png"}
+      src={"/assets/images/fireflyee-logo-new-transparent.png"}
       height={30}
       width={53}
       {...props}

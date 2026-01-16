@@ -1,7 +1,8 @@
 import { auth } from "@/lib/better-auth";
-import { Elysia, t } from "elysia";
+import { Elysia } from "elysia";
+import { productsApi } from "./product";
 
-const app = new Elysia({ prefix: "/api" }).mount(auth.handler);
+const app = new Elysia({ prefix: "/api" }).mount(auth.handler).use(productsApi);
 
 export type AppType = typeof app;
 

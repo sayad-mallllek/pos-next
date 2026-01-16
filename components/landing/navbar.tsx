@@ -11,7 +11,7 @@ export function Navbar() {
             alt="fireflyee-logo-new-transparent"
             height={30}
             width={53}
-            src={"/images/fireflyee-logo-new-transparent.png"}
+            src={"/assets/images/fireflyee-logo-new-transparent.png"}
           />
           <span className="text-sm sm:text-lg font-semibold text-white">
             FireFlyee

@@ -9,7 +9,7 @@ export function Hero() {
       <div className="pointer-events-none absolute inset-0">
         <div
           className="absolute inset-0 bg-contain sm:bg-cover bg-center bg-no-repeat opacity-30"
-          style={{ backgroundImage: "url('/images/blue-forest.jpg')" }}
+          style={{ backgroundImage: "url('/assets/images/blue-forest.jpg')" }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-forest-950/80 via-forest-900/60 to-forest-950" />
       </div>

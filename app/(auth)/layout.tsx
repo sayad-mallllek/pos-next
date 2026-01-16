@@ -1,6 +1,4 @@
 import { Logo } from "@/components/landing/logo";
-import { auth } from "@/lib/better-auth";
-import { headers } from "next/headers";
 import Link from "next/link";
 
 export default async function AuthLayout({
@@ -8,12 +6,6 @@ export default async function AuthLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  console.log("AuthLayout session:", session);
-
   return (
     <div className="flex min-h-screen">
       {/* Left side - Form */}
@@ -34,7 +26,7 @@ export default async function AuthLayout({
       </div>
 
       {/* Right side - Testimonial/Placeholder */}
-      <div className="hidden w-1/2 flex-col items-center justify-center  bg-gray-50 p-12 lg:flex bg-[url('/images/blue-forest.jpg')] bg-cover" />
+      <div className="hidden w-1/2 flex-col items-center justify-center  bg-gray-50 p-12 lg:flex bg-[url('/assets/images/blue-forest.jpg')] bg-cover" />
     </div>
   );
 }
